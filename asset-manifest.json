@@ -1,16 +1,16 @@
 {
   "files": {
-    "main.css": "/test1/static/css/main.2cce8147.chunk.css",
-    "main.js": "/test1/static/js/main.c244351d.chunk.js",
-    "main.js.map": "/test1/static/js/main.c244351d.chunk.js.map",
-    "runtime~main.js": "/test1/static/js/runtime~main.b37276f6.js",
-    "runtime~main.js.map": "/test1/static/js/runtime~main.b37276f6.js.map",
-    "static/js/2.58af1d4d.chunk.js": "/test1/static/js/2.58af1d4d.chunk.js",
-    "static/js/2.58af1d4d.chunk.js.map": "/test1/static/js/2.58af1d4d.chunk.js.map",
-    "index.html": "/test1/index.html",
-    "precache-manifest.ba82e96b23dceb8a4c6e31730a45f2d4.js": "/test1/precache-manifest.ba82e96b23dceb8a4c6e31730a45f2d4.js",
-    "service-worker.js": "/test1/service-worker.js",
-    "static/css/main.2cce8147.chunk.css.map": "/test1/static/css/main.2cce8147.chunk.css.map",
-    "static/media/logo.svg": "/test1/static/media/logo.5d5d9eef.svg"
+    "main.css": "/Netmapp/static/css/main.2cce8147.chunk.css",
+    "main.js": "/Netmapp/static/js/main.c3e9f05b.chunk.js",
+    "main.js.map": "/Netmapp/static/js/main.c3e9f05b.chunk.js.map",
+    "runtime~main.js": "/Netmapp/static/js/runtime~main.e1ff80ce.js",
+    "runtime~main.js.map": "/Netmapp/static/js/runtime~main.e1ff80ce.js.map",
+    "static/js/2.58af1d4d.chunk.js": "/Netmapp/static/js/2.58af1d4d.chunk.js",
+    "static/js/2.58af1d4d.chunk.js.map": "/Netmapp/static/js/2.58af1d4d.chunk.js.map",
+    "index.html": "/Netmapp/index.html",
+    "precache-manifest.2be5b1a7e28bf28ca485281adc123ea0.js": "/Netmapp/precache-manifest.2be5b1a7e28bf28ca485281adc123ea0.js",
+    "service-worker.js": "/Netmapp/service-worker.js",
+    "static/css/main.2cce8147.chunk.css.map": "/Netmapp/static/css/main.2cce8147.chunk.css.map",
+    "static/media/logo.svg": "/Netmapp/static/media/logo.5d5d9eef.svg"
   }
 }
