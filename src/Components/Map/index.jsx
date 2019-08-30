@@ -1,14 +1,18 @@
 import React, {Component} from "react";
+import styles from "./styles.module.scss";
 import OlMap from "ol/map";
 import OlView from "ol/view";
 import OlLayerTile from "ol/layer/tile";
 import OlSourceOSM from "ol/source/osm";
 
-class MyMap extends Component {
+class Map extends Component {
     constructor(props) {
         super(props);
 
-        this.state = {center: [0, 0], zoom: 1};
+        this.state = {
+            center: [0, 0],
+            zoom: 1
+        };
 
         this.olmap = new OlMap({
             target: null,
@@ -54,11 +58,11 @@ class MyMap extends Component {
     render() {
         this.updateMap(); // Update map on render?
         return (
-            <div id="map" style={{width: "100%", height: "360px"}}>
-                <button onClick={e => this.userAction()}>click</button>
+            <div id="map" className={styles.rootMap}>
+                <button onClick={e => this.userAction()}>Go To Point</button>
             </div>
         );
     }
 }
 
-export default MyMap;
+export default Map;
