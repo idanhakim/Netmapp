@@ -1,3 +1,5 @@
+@import "../../Styles/mixin";
+
 .rootHeader {
   background-color: #20232a;
   height: 80px;
@@ -7,26 +9,39 @@
   display: flex;
   justify-content: space-between;
   color: #61dafb;
-  padding: 0 20px;
+  padding: 0 30px;
 
-  .logoBox {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 2.7vw;
-    line-height: 1;
+  @include mQ(500px) {
+    padding: 0 20px;
   }
 
-  .navBox {
-    width: 35%;
-    display: flex;
-    align-items: center;
-    justify-content: space-around;
+  .logoBox {
+    @include center-flex();
+    font-size: 40px;
 
-    a {
-      text-decoration: none;
-      color: #61dafb;
+    @include mQ(500px) {
+      font-size: 7vw;
     }
   }
 
+  .navBox {
+    @include center-flex();
+
+    @include mQ(500px) {
+      font-size: 3.4vw;
+    }
+
+    a {
+      color: #61dafb;
+      margin-right: 5vw;
+
+      @include mQ(500px) {
+        margin-right: 3vw;
+      }
+
+      &:last-child {
+        margin-right: 0;
+      }
+    }
+  }
 }

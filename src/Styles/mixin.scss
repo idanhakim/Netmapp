@@ -1,0 +1,149 @@
+@mixin box-shadow($val) {
+  -webkit-box-shadow: $val;
+  -moz-box-shadow: $val;
+  box-shadow: $val;
+}
+
+@mixin transform($property) {
+  -webkit-transform: $property;
+  -ms-transform: $property;
+  transform: $property;
+  -moz-transform: $property;
+  -o-transform: $property;
+}
+
+@mixin border-radius($radius) {
+  -webkit-border-radius: $radius;
+  -moz-border-radius: $radius;
+  -ms-border-radius: $radius;
+  border-radius: $radius;
+}
+
+@mixin flex-direction($direction) {
+  -webkit-flex-direction: $direction;
+  flex-direction: $direction;
+  -ms-flex-direction: $direction;
+  -moz-flex-direction: $direction;
+}
+
+@mixin transition($transition...) {
+  -moz-transition: $transition;
+  -o-transition: $transition;
+  -webkit-transition: $transition;
+  transition: $transition;
+}
+
+@mixin transition-delay($val) {
+  transition-delay: $val;
+  -moz-transition-delay: $val;
+  -webkit-transition-delay: $val;
+  -o-transition-delay: $val;
+}
+
+// Flexbox display
+@mixin flexbox() {
+  display: -webkit-box;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  display: flex;
+}
+
+@mixin flex-wrap($wrap) {
+  -webkit-flex-wrap: $wrap;
+  -moz-flex-wrap: $wrap;
+  -ms-flex-wrap: $wrap;
+  flex-wrap: $wrap;
+}
+
+@mixin justify-content($justify) {
+  -webkit-justify-content: $justify;
+  -moz-justify-content: $justify;
+  -ms-justify-content: $justify;
+  justify-content: $justify;
+  -ms-flex-pack: $justify;
+}
+
+@mixin align-items($align) {
+  -webkit-align-items: $align;
+  -moz-align-items: $align;
+  -ms-align-items: $align;
+  align-items: $align;
+}
+
+@mixin animation($str) {
+  -webkit-animation: #{$str};
+  -moz-animation: #{$str};
+  -ms-animation: #{$str};
+  -o-animation: #{$str};
+  animation: #{$str};
+}
+
+@mixin abs-position($top, $right, $bottom, $left) {
+  position: absolute;
+  top: $top;
+  right: $right;
+  bottom: $bottom;
+  left: $left;
+}
+
+// -------------------------------------------------------------------------------
+
+@mixin mQ($arg...) {
+  @if length($arg) == 1 {
+    @media screen and (max-width: nth($arg, 1)) {
+      @content;
+    }
+  }
+  @if length($arg) == 2 {
+    @media screen and (max-width: nth($arg, 1)) and (min-width: nth($arg, 2)) {
+      @content;
+    }
+  }
+  @if length($arg) == 3 {
+    @media screen and (max-width: nth($arg, 1)) and (min-width: nth($arg, 2)) and (orientation: nth($arg, 3)) {
+      @content;
+    }
+  }
+  @if length($arg) == 4 {
+    @media screen and (max-width: nth($arg, 1)) and (min-width: nth($arg, 2)) and (orientation: nth($arg, 3)) and (max-height: nth($arg, 4)){
+      @content;
+    }
+  }
+  @if length($arg) == 5 {
+    @media screen and (max-width: nth($arg, 1)) and (min-width: nth($arg, 2)) and (orientation: nth($arg, 3)) and (max-height: nth($arg, 4)) and  (min-height: nth($arg, 5)){
+      @content;
+    }
+  }
+}
+
+@mixin center-abs($position) {
+  position: absolute;
+
+  @if $position == 'y' {
+    top: 50%;
+    @include transform(translateY(-50%));
+  }
+  @else if $position == 'x' {
+    left: 50%;
+    @include transform(translateX(-50%));
+  }
+  @else if $position == 'xy' {
+    top: 50%;
+    left: 50%;
+    @include transform(translate(-50%, -50%));
+  }
+}
+
+@mixin center-flex(){
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+
+// -------------------------------------------------------------------------------
+
+
+
+
