@@ -11,9 +11,9 @@ const App = () => {
     return (
         <Router>
             <Route path="/" component={Header}/>
-            <Route path="/" exact component={Home}/>
-            <Route path="/about-us/" component={AboutUs}/>
-            <Route path="/contact-us/" component={ContactUs}/>
+            <Route path="/Netmapp/" exact component={Home}/>
+            <Route path="/Netmapp/about-us/" component={AboutUs}/>
+            <Route path="/Netmapp/contact-us/" component={ContactUs}/>
             <Route path="/" component={Footer}/>
         </Router>
     );

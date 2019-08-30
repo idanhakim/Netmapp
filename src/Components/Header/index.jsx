@@ -9,9 +9,9 @@ const Header = () => {
                 Netmapp
             </div>
             <nav className={styles.navBox}>
-                <Link to="/">Home</Link>
-                <Link to="/contact-us">Contact Us</Link>
-                <Link to="/about-us">About US</Link>
+                <Link to="/Netmapp/">Home</Link>
+                <Link to="/Netmapp/contact-us">Contact Us</Link>
+                <Link to="/Netmapp/about-us">About US</Link>
             </nav>
         </header>
     );
