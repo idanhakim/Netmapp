@@ -1,7 +1,13 @@
-body, *{
+body, * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
   text-decoration: none;
   line-height: 1;
+}
+
+main {
+  max-width: 980px;
+  margin: 0 auto;
+  min-height: 900px;
 }

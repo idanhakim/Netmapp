@@ -1,4 +1,4 @@
-import React from "react";
+import React, {Fragment} from "react";
 import {Route} from "react-router-dom";
 
 import Header from "../Components/Header";
@@ -42,6 +42,20 @@ const routes = [
     }
 ];
 
-const RoutesApp = () => routes.map((route, i) => <Route key={i} {...route} />);
+const RoutesApp = () => {
+    const lengthIdx = routes.length - 1;
+    return (
+        <Fragment>
+            <Route {...routes[0]} />
+            <main>
+                {routes.reduce((acc, route, i) => {
+                    if (i === 0 || i === lengthIdx) return acc;
+                    return [...acc, <Route key={i} {...route} />]
+                }, [])}
+            </main>
+            <Route {...routes[lengthIdx]} />
+        </Fragment>
+    );
+};
 
 export default RoutesApp;
