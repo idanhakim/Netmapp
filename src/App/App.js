@@ -8,13 +8,14 @@ import Home from "../Pages/Home";
 import Footer from "../Components/Footer";
 
 const App = () => {
+    const preUrl = `${process.env.NODE_ENV === 'development' ? '/' : '/Netmapp/'}`;
     return (
         <Router>
-            <Route path="/" component={Header}/>
-            <Route path="/Netmapp/" exact component={Home}/>
-            <Route path="/Netmapp/about-us/" component={AboutUs}/>
-            <Route path="/Netmapp/contact-us/" component={ContactUs}/>
-            <Route path="/" component={Footer}/>
+            <Route path={preUrl} component={Header}/>
+            <Route path={preUrl} exact component={Home}/>
+            <Route path={`${preUrl}about-us/`} component={AboutUs}/>
+            <Route path={`${preUrl}contact-us/`} component={ContactUs}/>
+            <Route path={preUrl} component={Footer}/>
         </Router>
     );
 };

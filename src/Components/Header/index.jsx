@@ -3,15 +3,16 @@ import {Link} from "react-router-dom";
 import styles from './styles.module.scss';
 
 const Header = () => {
+    const preUrl = `${process.env.NODE_ENV === 'development' ? '/' : '/Netmapp/'}`;
     return (
         <header className={styles.rootHeader}>
             <div className={styles.logoBox}>
                 Netmapp
             </div>
             <nav className={styles.navBox}>
-                <Link to="/Netmapp/">Home</Link>
-                <Link to="/Netmapp/contact-us">Contact Us</Link>
-                <Link to="/Netmapp/about-us">About US</Link>
+                <Link to={preUrl}>Home</Link>
+                <Link to={`${preUrl}contact-us/`} >Contact Us</Link>
+                <Link to={`${preUrl}about-us/`} >About US</Link>
             </nav>
         </header>
     );
