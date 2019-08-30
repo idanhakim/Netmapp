@@ -4,6 +4,7 @@
   "private": true,
   "homepage": "https://idanhakim.github.io/Netmapp/",
   "dependencies": {
+    "ol": "4.6.5",
     "gh-pages": "^2.1.1",
     "node-sass": "^4.12.0",
     "react": "^16.9.0",

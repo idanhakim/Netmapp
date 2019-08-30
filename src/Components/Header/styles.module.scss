@@ -10,6 +10,7 @@
   justify-content: space-between;
   color: #61dafb;
   padding: 0 30px;
+  z-index: 20;
 
   @include mQ(500px) {
     padding: 0 20px;

@@ -1,9 +1,12 @@
 import React from 'react';
-// import styles from './styles.module.scss';
+import MyMap from "../../Components/MyMap/MyMap";
+import styles from './styles.module.scss';
 
 const Home = () => {
     return (
-        <div>Home</div>
+        <div className={styles.rootHome}>
+            <MyMap/>
+        </div>
     );
 };
 
