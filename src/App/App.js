@@ -1,22 +1,22 @@
 import React from 'react';
+import {BrowserRouter as Router, Route} from "react-router-dom";
 import './App.css';
+import Header from "../Components/Header";
+import AboutUs from "../Pages/AboutUs";
+import ContactUs from "../Pages/ContactUs";
+import Home from "../Pages/Home";
+import Footer from "../Components/Footer";
 
-function App() {
-  return (
-    <div>
-      <header>
-          Header
-      </header>
-
-      <main>
-          Main
-      </main>
-
-        <footer>
-            Footer
-        </footer>
-    </div>
-  );
-}
+const App = () => {
+    return (
+        <Router>
+            <Route path="/" component={Header}/>
+            <Route path="/" exact component={Home}/>
+            <Route path="/about-us/" component={AboutUs}/>
+            <Route path="/contact-us/" component={ContactUs}/>
+            <Route path="/" component={Footer}/>
+        </Router>
+    );
+};
 
 export default App;
