@@ -1,5 +1,5 @@
 import React, {Fragment} from "react";
-import {Route} from "react-router-dom";
+import {Route, Link} from "react-router-dom";
 
 import Header from "../Components/Header";
 import Footer from "../Components/Footer";
@@ -20,19 +20,19 @@ const routes = [
         path: preUrl,
         component: Home,
         exact: true,
-        label: ''
+        label: 'Home'
     },
     {
         path: `${preUrl}about-us/`,
         component: AboutUs,
         exact: true,
-        label: ''
+        label: 'About-Us'
     },
     {
         path: `${preUrl}contact-us/`,
         component: ContactUs,
         exact: true,
-        label: ''
+        label: 'Contact-Us'
     },
     {
         path: preUrl,
@@ -42,7 +42,19 @@ const routes = [
     }
 ];
 
-const RoutesApp = () => {
+export const LinksNav = () => {
+    const lengthIdx = routes.length - 1;
+    return (
+        <Fragment>
+            {routes.reduce((acc, {path, label}, i) => {
+                if (i === 0 || i === lengthIdx) return acc;
+                return [...acc, <Link key={i} to={path}>{label}</Link>]
+            }, [])}
+        </Fragment>
+    );
+};
+
+export const RoutesApp = () => {
     const lengthIdx = routes.length - 1;
     return (
         <Fragment>
@@ -57,5 +69,3 @@ const RoutesApp = () => {
         </Fragment>
     );
 };
-
-export default RoutesApp;
