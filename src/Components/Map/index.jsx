@@ -4,15 +4,19 @@ import OlMap from "ol/map";
 import OlView from "ol/view";
 import OlLayerTile from "ol/layer/tile";
 import OlSourceOSM from "ol/source/osm";
+import proj from "ol/proj";
+
 
 class Map extends Component {
     constructor(props) {
         super(props);
 
         this.state = {
-            center: [0, 0],
-            zoom: 1
+            center: [546000, 6868000],
+            zoom: 8
         };
+
+
 
         this.olmap = new OlMap({
             target: null,
@@ -34,6 +38,18 @@ class Map extends Component {
     }
 
     componentDidMount() {
+
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition((position) => {
+                console.log('---- Success to find your current location!!! ----')
+                var newCoord = proj.transform([position.coords.longitude,position.coords.latitude], 'EPSG:4326', 'EPSG:3857');
+                this.setState({
+                        center: newCoord,
+                        zoom: 14
+                    }
+                );
+            });
+        }
         this.olmap.setTarget("map");
 
         // Listen to map changes
@@ -42,6 +58,11 @@ class Map extends Component {
             let zoom = this.olmap.getView().getZoom();
             this.setState({center, zoom});
         });
+
+        // this.olmap.on('click', function(e) {
+        //     // alert("Lat, Lon : " + e.latlng.lat + ", " + e.latlng.lng)
+        //     console.log(e)
+        // });
     }
 
     shouldComponentUpdate(nextProps, nextState) {
@@ -52,7 +73,7 @@ class Map extends Component {
     }
 
     userAction() {
-        this.setState({center: [546000, 6868000], zoom: 5});
+        this.setState({center: [546000, 6868000], zoom: 10});
     }
 
     render() {
