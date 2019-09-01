@@ -1,4 +1,4 @@
-import React, {Component} from "react";
+import React, {Component, Fragment} from "react";
 import styles from "./styles.module.scss";
 import OlMap from "ol/map";
 import OlView from "ol/view";
@@ -15,8 +15,6 @@ class Map extends Component {
             center: [546000, 6868000],
             zoom: 8
         };
-
-
 
         this.olmap = new OlMap({
             target: null,
@@ -38,18 +36,6 @@ class Map extends Component {
     }
 
     componentDidMount() {
-
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition((position) => {
-                console.log('---- Success to find your current location!!! ----')
-                var newCoord = proj.transform([position.coords.longitude,position.coords.latitude], 'EPSG:4326', 'EPSG:3857');
-                this.setState({
-                        center: newCoord,
-                        zoom: 14
-                    }
-                );
-            });
-        }
         this.olmap.setTarget("map");
 
         // Listen to map changes
@@ -63,7 +49,36 @@ class Map extends Component {
         //     // alert("Lat, Lon : " + e.latlng.lat + ", " + e.latlng.lng)
         //     console.log(e)
         // });
+
+        this.updateToCurrentUserLocatiom();
     }
+
+    updateToCurrentUserLocatiom() {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition((position) => {
+                // alert('Success to find your current location!!!')
+                var newCoord = proj.transform([position.coords.longitude, position.coords.latitude], 'EPSG:4326', 'EPSG:3857');
+                this.setState({
+                        currentUserLocation: newCoord,
+                        center: newCoord,
+                        zoom: 14
+                    }
+                );
+            });
+        }
+    }
+
+    handleGoMyLocation = () => {
+        this.setState({
+            center: this.state.currentUserLocation
+        })
+    };
+
+    handleChangeZoom = (type) => {
+        this.setState(prevState => ({
+            zoom: type === '+' ? prevState.zoom + 1 : prevState.zoom - 1
+        }))
+    };
 
     shouldComponentUpdate(nextProps, nextState) {
         let center = this.olmap.getView().getCenter();
@@ -79,9 +94,25 @@ class Map extends Component {
     render() {
         this.updateMap(); // Update map on render?
         return (
-            <div id="map" className={styles.rootMap}>
-                <button onClick={e => this.userAction()}>Go To Point</button>
-            </div>
+            <Fragment>
+                <div id="map" className={styles.mapElement}/>
+                <div className={styles.optionsContainer}>
+                    {this.state.currentUserLocation &&
+                    <button className={styles.btnGoMyLocation} onClick={this.handleGoMyLocation}>
+                        My Location
+                    </button>
+                    }
+
+                    <div className={styles.zoomContainer}>
+                        <div className={styles.titleOption}>Zoom:</div>
+                        <div className={styles.buttonsContainer}>
+                            <button onClick={() => this.handleChangeZoom('+')}>+</button>
+                            <button onClick={() => this.handleChangeZoom('-')}>-</button>
+                        </div>
+                    </div>
+                </div>
+            </Fragment>
+
         );
     }
 }
