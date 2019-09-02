@@ -5,7 +5,10 @@ import OlView from "ol/view";
 import OlLayerTile from "ol/layer/tile";
 import OlSourceOSM from "ol/source/osm";
 import proj from "ol/proj";
-
+import Feature from "ol/feature";
+import Point from "ol/geom/point";
+import VectorSource from "ol/source/vector";
+import VectorLayer from "ol/layer/vector";
 
 class Map extends Component {
     constructor(props) {
@@ -17,7 +20,7 @@ class Map extends Component {
         };
 
         this.olmap = new OlMap({
-            target: null,
+            target: 'null',
             layers: [
                 new OlLayerTile({
                     source: new OlSourceOSM()
@@ -61,9 +64,22 @@ class Map extends Component {
                 this.setState({
                         currentUserLocation: newCoord,
                         center: newCoord,
-                        zoom: 14
+                        zoom: 16
                     }
                 );
+
+                // Add marker on map - current position!
+                var layer = new VectorLayer({
+                    source: new VectorSource({
+                        features: [
+                            new Feature({
+                                geometry: new Point(newCoord)
+                            })
+                        ]
+                    })
+                });
+                this.olmap.addLayer(layer);
+
             });
         }
     }
@@ -85,10 +101,6 @@ class Map extends Component {
         let zoom = this.olmap.getView().getZoom();
         if (center === nextState.center && zoom === nextState.zoom) return false;
         return true;
-    }
-
-    userAction() {
-        this.setState({center: [546000, 6868000], zoom: 10});
     }
 
     render() {
