@@ -95,20 +95,15 @@ class Map extends Component {
         this.updateMap(); // Update map on render?
         return (
             <Fragment>
-                <div id="map" className={styles.mapElement}/>
-                <div className={styles.optionsContainer}>
+                <div id="map" className={styles.mapElement}>
                     {this.state.currentUserLocation &&
-                    <button className={styles.btnGoMyLocation} onClick={this.handleGoMyLocation}>
-                        My Location
-                    </button>
+                        <button className={styles.btnGoMyLocation} onClick={this.handleGoMyLocation}>
+                            My Location
+                        </button>
                     }
-
                     <div className={styles.zoomContainer}>
-                        <div className={styles.titleOption}>Zoom:</div>
-                        <div className={styles.buttonsContainer}>
-                            <button onClick={() => this.handleChangeZoom('+')}>+</button>
-                            <button onClick={() => this.handleChangeZoom('-')}>-</button>
-                        </div>
+                        <button onClick={() => this.handleChangeZoom('+')}>+</button>
+                        <button onClick={() => this.handleChangeZoom('-')}>-</button>
                     </div>
                 </div>
             </Fragment>

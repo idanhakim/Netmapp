@@ -1,8 +1,9 @@
 @import "../../Styles/mixin";
 
 .rootHome{
+  padding: 30px 0px;
 
   @include mQ(500px){
-    padding: 0 10px;
+    padding: 30px 10px;
   }
 }
