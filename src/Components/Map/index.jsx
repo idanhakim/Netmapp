@@ -9,6 +9,14 @@ import Feature from "ol/feature";
 import Point from "ol/geom/point";
 import VectorSource from "ol/source/vector";
 import VectorLayer from "ol/layer/vector";
+import Style from "ol/style/style";
+
+import Circle from "ol/style/circle";
+import Fill from "ol/style/fill";
+import Stroke from "ol/style/stroke";
+import Icon from "ol/style/icon";
+
+import iconMark from './icons8-marker-30.png';
 
 class Map extends Component {
     constructor(props) {
@@ -21,6 +29,8 @@ class Map extends Component {
 
         this.olmap = new OlMap({
             target: 'null',
+            loadTilesWhileAnimating: true,
+            loadTilesWhileInteracting: true,
             layers: [
                 new OlLayerTile({
                     source: new OlSourceOSM()
@@ -28,7 +38,7 @@ class Map extends Component {
             ],
             view: new OlView({
                 center: this.state.center,
-                zoom: this.state.zoom
+                zoom: this.state.zoom,
             })
         });
     }
@@ -69,15 +79,45 @@ class Map extends Component {
                 );
 
                 // Add marker on map - current position!
+
+                var marker = new Feature({
+                    geometry: new Point(newCoord),
+                });
+
+                var style1 = [
+                    new Style({
+                        image: new Icon(({
+                            scale: 1,
+                            rotateWithView: false,
+                            anchor: [0.5, 1],
+                            anchorXUnits: 'fraction',
+                            anchorYUnits: 'fraction',
+                            opacity: 1,
+                            src: iconMark
+                        })),
+                        zIndex: 5
+                    }),
+                    new Style({
+                        image: new Circle({
+                            radius: 5,
+                            fill: new Fill({
+                                color: 'rgba(255,255,255,1)'
+                            }),
+                            stroke: new Stroke({
+                                color: 'black'
+                            })
+                        })
+                    })
+                ];
+
+                marker.setStyle(style1)
+
                 var layer = new VectorLayer({
                     source: new VectorSource({
-                        features: [
-                            new Feature({
-                                geometry: new Point(newCoord)
-                            })
-                        ]
+                        features: [marker]
                     })
                 });
+
                 this.olmap.addLayer(layer);
 
             });
@@ -109,9 +149,9 @@ class Map extends Component {
             <Fragment>
                 <div id="map" className={styles.mapElement}>
                     {this.state.currentUserLocation &&
-                        <button className={styles.btnGoMyLocation} onClick={this.handleGoMyLocation}>
-                            My Location
-                        </button>
+                    <button className={styles.btnGoMyLocation} onClick={this.handleGoMyLocation}>
+                        My Location
+                    </button>
                     }
                     <div className={styles.zoomContainer}>
                         <button onClick={() => this.handleChangeZoom('+')}>+</button>

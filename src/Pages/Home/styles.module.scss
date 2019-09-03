@@ -6,4 +6,16 @@
   @include mQ(500px){
     padding: 30px 10px;
   }
+
+  .title{
+    margin-bottom: 2vw;
+    font-size: 2vw;
+    letter-spacing: 1vw;
+    font-weight: bold;
+
+    @include mQ(500px){
+      margin-bottom: 3vw;
+      font-size: 5vw;
+    }
+  }
 }
