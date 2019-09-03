@@ -24,7 +24,8 @@ class Map extends Component {
 
         this.state = {
             center: [546000, 6868000],
-            zoom: 8
+            zoom: 8,
+            details: null
         };
 
         this.olmap = new OlMap({
@@ -43,7 +44,7 @@ class Map extends Component {
         });
     }
 
-    updateMap() {
+    updateMap = () => {
         this.olmap.getView().setCenter(this.state.center);
         this.olmap.getView().setZoom(this.state.zoom);
     }
@@ -66,17 +67,34 @@ class Map extends Component {
         this.updateToCurrentUserLocatiom();
     }
 
-    updateToCurrentUserLocatiom() {
+    getDetailsLocation = (longitude, latitude) => {
+        return fetch('https://nominatim.openstreetmap.org/reverse?format=json&lon=' + longitude + '&lat=' + latitude)
+            .then((res) => {
+                return res.json();
+            }).then((json) => {
+                return json;
+        });
+    }
+
+    updateToCurrentUserLocatiom = () => {
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition((position) => {
                 // alert('Success to find your current location!!!')
                 var newCoord = proj.transform([position.coords.longitude, position.coords.latitude], 'EPSG:4326', 'EPSG:3857');
-                this.setState({
-                        currentUserLocation: newCoord,
-                        center: newCoord,
-                        zoom: 16
-                    }
-                );
+
+
+
+                this.getDetailsLocation(position.coords.longitude, position.coords.latitude)
+                    .then(data =>{
+                        console.log('data:', data.address);
+                        this.setState({
+                                currentUserLocation: newCoord,
+                                center: newCoord,
+                                zoom: 16,
+                                details: data.address
+                            }
+                        );
+                    })
 
                 // Add marker on map - current position!
 
@@ -145,6 +163,7 @@ class Map extends Component {
 
     render() {
         this.updateMap(); // Update map on render?
+
         return (
             <Fragment>
                 <div id="map" className={styles.mapElement}>
@@ -158,6 +177,16 @@ class Map extends Component {
                         <button onClick={() => this.handleChangeZoom('-')}>-</button>
                     </div>
                 </div>
+
+                {this.state.details &&
+                    <div className={styles.detailsContainer}>
+                        <h2>Details:</h2>
+                        <div>
+                            <div>City: {this.state.details.city}</div>
+                            <div>Country: {this.state.details.country}</div>
+                        </div>
+                    </div>
+                }
             </Fragment>
 
         );
