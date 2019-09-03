@@ -1,5 +1,7 @@
 import React, {Component, Fragment} from "react";
 import styles from "./styles.module.scss";
+import config from "./config";
+
 import OlMap from "ol/map";
 import OlView from "ol/view";
 import OlLayerTile from "ol/layer/tile";
@@ -67,15 +69,6 @@ class Map extends Component {
         this.updateToCurrentUserLocatiom();
     }
 
-    getDetailsLocation = (longitude, latitude) => {
-        return fetch('https://nominatim.openstreetmap.org/reverse?format=json&lon=' + longitude + '&lat=' + latitude)
-            .then((res) => {
-                return res.json();
-            }).then((json) => {
-                return json;
-        });
-    }
-
     updateToCurrentUserLocatiom = () => {
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition((position) => {
@@ -83,15 +76,13 @@ class Map extends Component {
                 var newCoord = proj.transform([position.coords.longitude, position.coords.latitude], 'EPSG:4326', 'EPSG:3857');
 
 
-
-                this.getDetailsLocation(position.coords.longitude, position.coords.latitude)
-                    .then(data =>{
-                        console.log('data:', data.address);
+                config.getAddressLocation(position.coords.longitude, position.coords.latitude)
+                    .then((details) => {
                         this.setState({
                                 currentUserLocation: newCoord,
                                 center: newCoord,
                                 zoom: 16,
-                                details: data.address
+                                details
                             }
                         );
                     })
@@ -161,9 +152,10 @@ class Map extends Component {
         return true;
     }
 
+
+
     render() {
         this.updateMap(); // Update map on render?
-
         return (
             <Fragment>
                 <div id="map" className={styles.mapElement}>
@@ -179,13 +171,13 @@ class Map extends Component {
                 </div>
 
                 {this.state.details &&
-                    <div className={styles.detailsContainer}>
-                        <h2>Details:</h2>
-                        <div>
-                            <div>City: {this.state.details.city}</div>
-                            <div>Country: {this.state.details.country}</div>
-                        </div>
+                <div className={styles.detailsContainer}>
+                    <h2>Details:</h2>
+                    <div>
+                        <div>City: {this.state.details.city}</div>
+                        <div>Country: {this.state.details.country}</div>
                     </div>
+                </div>
                 }
             </Fragment>
 
