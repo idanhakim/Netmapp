@@ -1,10 +1,10 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "5e0d599119b8397005b2a80e58d19c46",
+    "revision": "df2e65f6354f30b7db7a5b00d77f467a",
     "url": "/Netmapp/index.html"
   },
   {
-    "revision": "a9c84a3d2e6307a7a2ee",
+    "revision": "5f8bd10db1aa7ae018e2",
     "url": "/Netmapp/static/css/main.b330df5c.chunk.css"
   },
   {
@@ -12,8 +12,8 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/Netmapp/static/js/2.c57dd8f9.chunk.js"
   },
   {
-    "revision": "a9c84a3d2e6307a7a2ee",
-    "url": "/Netmapp/static/js/main.484e8a6a.chunk.js"
+    "revision": "5f8bd10db1aa7ae018e2",
+    "url": "/Netmapp/static/js/main.e20a278f.chunk.js"
   },
   {
     "revision": "22153e59cd80d60e0675",
