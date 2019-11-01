@@ -1,14 +1,16 @@
 import React from 'react';
-import {BrowserRouter as Router} from "react-router-dom";
+import {HashRouter} from "react-router-dom";
 import {RoutesApp} from '../Pages/routes'
 import '../Styles/reset.scss';
 
 const App = () => {
 
     return (
-        <Router>
-            <RoutesApp />
-        </Router>
+        <HashRouter
+            basename={process.env.NODE_ENV === 'development' ? '/Netmapp/' : '/'}
+        >
+            <RoutesApp/>
+        </HashRouter>
     );
 };
 

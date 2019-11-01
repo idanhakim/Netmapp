@@ -7,7 +7,8 @@ import Home from "./Home";
 import AboutUs from "./AboutUs";
 import ContactUs from "./ContactUs";
 
-const preUrl = `${process.env.NODE_ENV === 'development' ? '/' : '/Netmapp/'}`;
+// const preUrl = `${process.env.NODE_ENV === 'development' ? '/' : '/Netmapp/'}`;
+const preUrl = `/`;
 
 const routes = [
     {
@@ -58,14 +59,14 @@ export const RoutesApp = () => {
     const lengthIdx = routes.length - 1;
     return (
         <Fragment>
-            <Route {...routes[0]} />
+            <Route {...routes[0]} /> //Header
             <main>
                 {routes.reduce((acc, route, i) => {
                     if (i === 0 || i === lengthIdx) return acc;
                     return [...acc, <Route key={i} {...route} />]
                 }, [])}
             </main>
-            <Route {...routes[lengthIdx]} />
+            <Route {...routes[lengthIdx]} /> //Footer
         </Fragment>
     );
 };
