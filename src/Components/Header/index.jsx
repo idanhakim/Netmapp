@@ -5,7 +5,7 @@ import {LinksNav} from '../../Pages/routes';
 const Header = () => {
     return (
         <header className={styles.rootHeader}>
-            <div className={styles.logoBox}>Netmapp</div>
+            <div className={styles.logoBox}>NetMap</div>
             <nav className={styles.navBox}>
                 <LinksNav/>
             </nav>

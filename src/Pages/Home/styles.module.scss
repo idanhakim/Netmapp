@@ -1,21 +1,59 @@
 @import "../../Styles/mixin";
 
-.rootHome{
+.rootHome {
   padding: 30px 0px;
 
-  @include mQ(500px){
+  @include mQ(500px) {
     padding: 30px 10px;
   }
 
-  .title{
-    margin-bottom: 2vw;
-    font-size: 2vw;
-    letter-spacing: 1vw;
-    font-weight: bold;
+  .titleContainer {
+    position: relative;
+    width: 85%;
+    margin: 0 auto;
+    overflow: hidden;
+    height: 291px;
 
-    @include mQ(500px){
-      margin-bottom: 3vw;
-      font-size: 5vw;
+    @include mQ(500px) {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 211px;
+      overflow: visible;
+    }
+
+    .bg {
+      opacity: 0.4;
+      width: 100%;
+
+      @include mQ(500px) {
+        transform: scale(1.5);
+      }
+    }
+
+    .markerWrapper {
+      position: absolute;
+      left: 0;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+
+    .title {
+      position: absolute;
+      font-size: 2.4vw;
+      letter-spacing: 0.7vw;
+      font-weight: bold;
+      top: 65%;
+      left: 50%;
+      white-space: nowrap;
+      transform: translate(-50%, -50%);
+      z-index: 10;
+
+      @include mQ(500px) {
+        font-size: 6vw;
+        top: 50%;
+      }
     }
   }
 }

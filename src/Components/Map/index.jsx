@@ -19,8 +19,8 @@ import Fill from "ol/style/fill";
 import Stroke from "ol/style/stroke";
 import Icon from "ol/style/icon";
 
-// import GeoJson from "ol/format/geojson";
-import iconMark from './icons8-marker-30.png';
+import iconMark from './markers-images/icons8-marker-30.png';
+import signalMark from './markers-images/signal-marker.png';
 
 class Map extends Component {
     constructor(props) {
@@ -31,7 +31,9 @@ class Map extends Component {
             zoom: 8,
             details: null,
             points: null,
-            mno: 'All'
+            pointsLayers: [],
+            mno: 'All',
+            model: 'All'
         };
 
         this.createMapObj();
@@ -57,7 +59,6 @@ class Map extends Component {
     }
 
     getPointsData = () => {
-
         fetch('http://ec2-18-219-102-0.us-east-2.compute.amazonaws.com:3000/signalgps')
             .then(res => res.json())
             .then(data => this.setState({points: data}))
@@ -73,7 +74,6 @@ class Map extends Component {
         // time: "28.10.2019"
         // type: "iphone 10"
 
-        console.log(obj);
         var newCoord = proj.transform([+(obj.Longitude), +(obj.Latitude)], 'EPSG:4326', 'EPSG:3857');
 
         var marker = new Feature({
@@ -83,13 +83,13 @@ class Map extends Component {
         var style1 = [
             new Style({
                 image: new Icon(({
-                    scale: 1,
+                    scale: 0.8,
                     rotateWithView: false,
                     anchor: [0.5, 1],
                     anchorXUnits: 'fraction',
                     anchorYUnits: 'fraction',
                     opacity: 1,
-                    src: iconMark
+                    src: signalMark
                 })),
                 zIndex: 5
             }),
@@ -97,7 +97,7 @@ class Map extends Component {
                 image: new Circle({
                     radius: 5,
                     fill: new Fill({
-                        color: 'rgba(255,255,255,1)'
+                        color: config.mnoColors[obj.MNO] ? config.mnoColors[obj.MNO] : 'rgba(255,255,255,1)'
                     }),
                     stroke: new Stroke({
                         color: 'black'
@@ -128,13 +128,43 @@ class Map extends Component {
             })
         });
 
+        this.setState((prevState, prevProps) => ({
+            pointsLayers: [...prevState.pointsLayers, layer] // save layer point in array
+        }));
+
         this.olmap.addLayer(layer);
+
     }
 
     renderPointsOnMap = () => {
+        const {addSingleMarker, state: {points, mno, model}} = this;
 
-        this.state.points.filter(item => item.MNO === this.state.mno || this.state.mno === 'All').map(item2 => item2.signal_strengh && this.addSingleMarker(item2))
-    }
+        const isDuplicatedPoint = (currentPoint, arr) =>{
+            return arr.some(item2 => {
+               return (item2.Latitude === currentPoint.Latitude &&
+                    item2.Longitude === currentPoint.Longitude &&
+                    item2.MNO === currentPoint.MNO
+                   ) ||
+                   (Math.abs((currentPoint.Longitude) - (item2.Longitude)) < 0.00001 && item2.MNO === currentPoint.MNO)  ||
+                   (Math.abs((currentPoint.Latitude) - (item2.Latitude)) < 0.00001 && item2.MNO === currentPoint.MNO)
+            })
+        };
+
+        const filterArr2 = points.reduce((acc, item)=>{
+            if ((item.MNO === mno || mno === 'All') &&
+                (item.type === model || model === 'All') &&
+                (!isNaN(+item.signal_strengh)) &&
+                (!isDuplicatedPoint(item, acc))&&
+                (item.signal_strengh !== null)
+            ){
+                return [...acc, item]
+            }
+            return acc;
+        },[]);
+        console.log(filterArr2);
+
+        filterArr2.map(item2 => item2.signal_strengh && addSingleMarker(item2))
+    };
 
     createMapObj = () => {
         this.olmap = new OlMap({
@@ -151,19 +181,17 @@ class Map extends Component {
                 zoom: this.state.zoom,
             })
         });
-
-        // this.vectorLayer = new VectorLayer({
-        //     source: new VectorSource({
-        //         url: 'https://openlayers.org/en/v4.2.0/examples/data/geojson/countries.geojson',
-        //         format: new GeoJson()
-        //     })
-        // });
-    }
+    };
 
     updateMap = () => {
-        this.olmap.getView().setCenter(this.state.center);
-        this.olmap.getView().setZoom(this.state.zoom);
-    }
+        const {olmap, state: {zoom, center}} = this;
+
+        const currentCenter = olmap.getView().getCenter();
+        const currentZoom = olmap.getView().getZoom();
+
+        currentZoom !== zoom && olmap.getView().setZoom(zoom);
+        currentCenter !== center && olmap.getView().setCenter(center);
+    };
 
     updateToCurrentUserLocatiom = () => {
         if (navigator.geolocation) {
@@ -229,9 +257,7 @@ class Map extends Component {
     }
 
     handleGoMyLocation = () => {
-        this.setState({
-            center: this.state.currentUserLocation
-        })
+        this.setState({center: this.state.currentUserLocation})
     };
 
     handleChangeZoom = (type) => {
@@ -241,41 +267,126 @@ class Map extends Component {
     };
 
     shouldComponentUpdate(nextProps, nextState) {
-        let center = this.olmap.getView().getCenter();
-        let zoom = this.olmap.getView().getZoom();
-        if (center === nextState.center && zoom === nextState.zoom) return false;
+        // let center = this.olmap.getView().getCenter();
+        // let zoom = this.olmap.getView().getZoom();
+        // if (center === nextState.center && zoom === nextState.zoom) return false;
         return true;
     }
 
-    handleMnoChange = (e)=>{
-        this.setState({mno: e.target.value}, ()=>{
-            // var features = this.vectorLayer.getSource().getFeatures();
-            // features.forEach((feature) => {
-            //     this.vectorLayer.getSource().removeFeature(feature);
-            // });
 
-            this.renderPointsOnMap()
-        })
+    renderMap = () => {
 
+        const {handleGoMyLocation, handleChangeZoom, state: {currentUserLocation}} = this;
+        return (
+            <div id="map" className={styles.mapElement}>
+                {currentUserLocation &&
+                <button className={styles.btnGoMyLocation} onClick={handleGoMyLocation}>
+                    My Location
+                </button>
+                }
+                <div className={styles.zoomContainer}>
+                    <button onClick={() => handleChangeZoom('+')}>+</button>
+                    <button onClick={() => handleChangeZoom('-')}>-</button>
+                </div>
+            </div>
+        );
     }
 
+    renderFilters = () => {
+        const {state: {points, mno, model}} = this;
+
+        const handleMnoChange = (e) => {
+            this.setState({mno: e.target.value, model: 'All'}, () => {
+                this.clearPoints()
+                this.renderPointsOnMap()
+            })
+        }
+
+        const handleModelChange = (e) => {
+            this.setState({model: e.target.value}, () => {
+                this.clearPoints()
+                this.renderPointsOnMap()
+            })
+        }
+
+        const getMnoOptions = () => {
+            return (
+                points && [...new Set(points.reduce((acc, item) => {
+                    if (item.MNO) {
+                        return [...acc, item.MNO.charAt(0).toUpperCase() + item.MNO.slice(1)]
+                    }
+                    return acc;
+                }, []))].map((item, i) => <option key={i} value={item}>{item}</option>)
+            );
+        };
+
+        const getModelsOptions = () => {
+            return (
+                points && [...new Set(points.reduce((acc, item) => {
+                    if (item.type && (item.MNO === this.state.mno || this.state.mno === 'All')) {
+                        return [...acc, item.type]
+                    }
+                    return acc;
+                }, []))].map((item, i) => <option key={i} value={item}>{item}</option>)
+            );
+        };
+
+        return (
+            <div className={styles.filtersContainer}>
+                <div>
+                    <label className={`${!points ? styles.disabled : ''}`}>Network:</label>
+                    <select value={mno} onChange={handleMnoChange} disabled={!points}>
+                        <option value="All">All</option>
+                        {getMnoOptions()}
+                    </select>
+                </div>
+                <div>
+                    <label className={`${!points ? styles.disabled : ''}`}>Model:</label>
+                    <select value={model} onChange={handleModelChange} disabled={!points}>
+                        <option value="All">All</option>
+                        {getModelsOptions()}
+                    </select>
+                </div>
+            </div>
+        );
+    }
+
+    renderSummary = () => {
+        const {pointsLayers, mno, points} = this.state;
+
+        return (
+            <div className={styles.summaryContainer}>
+                {points ?
+                    `Showing ${pointsLayers.length} points - ${mno === 'All' ? 'All Cellular networks' : mno + ' network'}!`
+                    :
+                    'Loading points from server...'
+                }
+            </div>
+        );
+    }
+
+    clearPoints = () => {
+        this.state.pointsLayers.forEach(item => this.olmap.removeLayer(item))
+        this.setState({pointsLayers: []})
+    };
+
     render() {
+        const {
+            renderMap, renderFilters, renderSummary,
+            state: {details, points}
+        } = this;
+
         this.updateMap(); // Update map on render?
         return (
             <Fragment>
-                <div id="map" className={styles.mapElement}>
-                    {this.state.currentUserLocation &&
-                    <button className={styles.btnGoMyLocation} onClick={this.handleGoMyLocation}>
-                        My Location
-                    </button>
-                    }
-                    <div className={styles.zoomContainer}>
-                        <button onClick={() => this.handleChangeZoom('+')}>+</button>
-                        <button onClick={() => this.handleChangeZoom('-')}>-</button>
-                    </div>
-                </div>
 
-                {this.state.details &&
+                {renderSummary()}
+
+                {renderFilters()}
+
+                {renderMap()}
+
+                {details &&
                 <div className={styles.detailsContainer}>
                     <h2>Details:</h2>
                     <div>
@@ -285,20 +396,6 @@ class Map extends Component {
                 </div>
                 }
 
-                {this.state.points ?
-                    <p>YES POINTS!</p>
-                    :
-                    <p>No POINTS!</p>
-                }
-
-                {this.state.points &&
-                <select value={this.state.mno} onChange={this.handleMnoChange}>
-                    <option value="All">All</option>
-                    <option value="Partner">Partner</option>
-                    <option value="Pelephone">Pelephone</option>
-                    <option value="012 Mobile">012 Mobile</option>
-                </select>
-                }
 
             </Fragment>
         );

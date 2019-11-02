@@ -6,7 +6,12 @@ const config = {
             }).then((json) => {
                 return json.address;
             });
+    },
+    mnoColors:{
+        Partner: '#2cd5c4',
+        ['012 Mobile']: '#f9d711',
+        Pelephone: '#2d6db7'
     }
-}
+};
 
 export default config;

@@ -92,3 +92,31 @@ button {
     margin-bottom: 10px;
   }
 }
+
+.summaryContainer {
+  margin-bottom: 20px;
+}
+
+.filtersContainer {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  width: 59%;
+  margin: 0 auto 20px;
+
+  @include mQ(500px) {
+    flex-direction: column;
+    width: 80%;
+    align-items: flex-start;
+  }
+
+
+  label {
+    font-size: 13px;
+    margin-right: 7px;
+
+    &.disabled{
+      color: #a2a1a1;
+    }
+  }
+}

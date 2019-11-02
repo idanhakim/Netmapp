@@ -44,12 +44,13 @@ const routes = [
 ];
 
 export const LinksNav = () => {
-    const lengthIdx = routes.length - 1;
     return (
         <Fragment>
             {routes.reduce((acc, {path, label}, i) => {
-                if (i === 0 || i === lengthIdx) return acc;
-                return [...acc, <Link key={i} to={path}>{label}</Link>]
+                if (i === 0 || i === routes.length - 1) return acc;
+                return [...acc,
+                    <Link key={i} to={path}>{label}</Link>
+                ]
             }, [])}
         </Fragment>
     );
@@ -59,14 +60,14 @@ export const RoutesApp = () => {
     const lengthIdx = routes.length - 1;
     return (
         <Fragment>
-            <Route {...routes[0]} /> //Header
+            <Route {...routes[0]} />
             <main>
                 {routes.reduce((acc, route, i) => {
                     if (i === 0 || i === lengthIdx) return acc;
                     return [...acc, <Route key={i} {...route} />]
                 }, [])}
             </main>
-            <Route {...routes[lengthIdx]} /> //Footer
+            <Route {...routes[lengthIdx]} />
         </Fragment>
     );
 };
