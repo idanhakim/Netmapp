@@ -1,15 +1,16 @@
 {
   "files": {
-    "main.css": "/Netmapp/static/css/main.be61e644.chunk.css",
-    "main.js": "/Netmapp/static/js/main.db317020.chunk.js",
-    "main.js.map": "/Netmapp/static/js/main.db317020.chunk.js.map",
+    "main.css": "/Netmapp/static/css/main.2403ab8d.chunk.css",
+    "main.js": "/Netmapp/static/js/main.26170888.chunk.js",
+    "main.js.map": "/Netmapp/static/js/main.26170888.chunk.js.map",
     "runtime~main.js": "/Netmapp/static/js/runtime~main.e1ff80ce.js",
     "runtime~main.js.map": "/Netmapp/static/js/runtime~main.e1ff80ce.js.map",
-    "static/js/2.76a2cc64.chunk.js": "/Netmapp/static/js/2.76a2cc64.chunk.js",
-    "static/js/2.76a2cc64.chunk.js.map": "/Netmapp/static/js/2.76a2cc64.chunk.js.map",
+    "static/js/2.1aaf8e87.chunk.js": "/Netmapp/static/js/2.1aaf8e87.chunk.js",
+    "static/js/2.1aaf8e87.chunk.js.map": "/Netmapp/static/js/2.1aaf8e87.chunk.js.map",
     "index.html": "/Netmapp/index.html",
-    "precache-manifest.974155ee9368d03030b1d39a74d73c91.js": "/Netmapp/precache-manifest.974155ee9368d03030b1d39a74d73c91.js",
+    "precache-manifest.9feb4c5e68d981dfc4f4d91643c844af.js": "/Netmapp/precache-manifest.9feb4c5e68d981dfc4f4d91643c844af.js",
     "service-worker.js": "/Netmapp/service-worker.js",
-    "static/css/main.be61e644.chunk.css.map": "/Netmapp/static/css/main.be61e644.chunk.css.map"
+    "static/css/main.2403ab8d.chunk.css.map": "/Netmapp/static/css/main.2403ab8d.chunk.css.map",
+    "static/media/test.svg": "/Netmapp/static/media/test.9d1cbae3.svg"
   }
 }
