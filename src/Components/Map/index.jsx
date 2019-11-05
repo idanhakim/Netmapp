@@ -20,7 +20,9 @@ import Stroke from "ol/style/stroke";
 import Icon from "ol/style/icon";
 
 import iconMark from './markers-images/icons8-marker-30.png';
-import signalMark from './markers-images/signal-marker.png';
+// import signalMark from './markers-images/signal-marker.png';
+
+const NUMBER_OF_TRY = 4;
 
 class Map extends Component {
     constructor(props) {
@@ -28,19 +30,24 @@ class Map extends Component {
 
         this.state = {
             center: [546000, 6868000],
+            currentUserLocation: null,
             zoom: 8,
             details: null,
             points: null,
             pointsLayers: [],
             mno: 'All',
-            model: 'All'
+            model: 'All',
+            paintPointBy: 'Network',
+            filterTime: '24'
         };
 
         this.createMapObj();
+
+        this.dbTry = 0;
     }
 
     componentDidMount() {
-        this.getPointsData()
+        this.updateToCurrentUserLocatiom();
         this.olmap.setTarget("map");
 
         // Listen to map changes
@@ -54,12 +61,10 @@ class Map extends Component {
         //     // alert("Lat, Lon : " + e.latlng.lat + ", " + e.latlng.lng)
         //     console.log(e)
         // });
-
-        this.updateToCurrentUserLocatiom();
     }
 
     getPointsData = () => {
-        fetch('http://ec2-18-219-102-0.us-east-2.compute.amazonaws.com:3000/signalgps')
+        fetch(`http://ec2-18-219-102-0.us-east-2.compute.amazonaws.com:3000/signalgps/${this.state.filterTime !== '' ? `interval?intervalInHours=${this.state.filterTime}` : ''}`)
             .then(res => res.json())
             .then(data => this.setState({points: data}))
             .then(_ => this.renderPointsOnMap())
@@ -67,12 +72,29 @@ class Map extends Component {
     };
 
     addSingleMarker = (obj) => {
-        // Latitude: "32.014417"
-        // Longitude: "34.773997"
-        // MNO: "Partner"
-        // signal_strengh: "-93"
-        // time: "28.10.2019"
-        // type: "iphone 10"
+        const getPointColor = () =>{
+            if (this.state.paintPointBy === 'Network'){
+                return config.mnoColors[obj.MNO] ? config.mnoColors[obj.MNO] : 'rgba(255,255,255,1)'
+            }else {
+                if (obj.signal_strengh > -70){
+                    return 'rgba(106, 205, 89, 0.5)';
+                }else {
+                    if (obj.signal_strengh < -110){
+                        return 'rgba(172, 12, 5, 0.5)';
+                    }else{
+                        if (obj.signal_strengh <= -70 && obj.signal_strengh > -85){
+                            return 'rgba(250, 250, 11, 0.5)'
+                        }
+                        if (obj.signal_strengh <= -85 && obj.signal_strengh > -100){
+                            return 'rgba(247, 185, 7, 0.5)'
+                        }
+                        if (obj.signal_strengh <= -100 && obj.signal_strengh > -110){
+                            return 'rgba(237, 22, 8, 0.5)'
+                        }
+                    }
+                }
+            }
+        }
 
         var newCoord = proj.transform([+(obj.Longitude), +(obj.Latitude)], 'EPSG:4326', 'EPSG:3857');
 
@@ -81,43 +103,43 @@ class Map extends Component {
         });
 
         var style1 = [
-            new Style({
-                image: new Icon(({
-                    scale: 0.8,
-                    rotateWithView: false,
-                    anchor: [0.5, 1],
-                    anchorXUnits: 'fraction',
-                    anchorYUnits: 'fraction',
-                    opacity: 1,
-                    src: signalMark
-                })),
-                zIndex: 5
-            }),
+            // new Style({
+            //     image: new Icon(({
+            //         scale: 0.8,
+            //         rotateWithView: false,
+            //         anchor: [0.5, 1],
+            //         anchorXUnits: 'fraction',
+            //         anchorYUnits: 'fraction',
+            //         opacity: 1,
+            //         src: signalMark
+            //     })),
+            //     zIndex: 5
+            // }),
             new Style({
                 image: new Circle({
                     radius: 5,
                     fill: new Fill({
-                        color: config.mnoColors[obj.MNO] ? config.mnoColors[obj.MNO] : 'rgba(255,255,255,1)'
+                        color: getPointColor()
                     }),
                     stroke: new Stroke({
                         color: 'black'
                     })
                 })
             }),
-            new Style({
-                text: new Text({
-                    text: obj.signal_strengh,
-                    scale: 1.2,
-                    offsetY: 15,
-                    fill: new Fill({
-                        color: "#fff"
-                    }),
-                    stroke: new Stroke({
-                        color: "0",
-                        width: 3
-                    })
-                })
-            }),
+            // new Style({
+            //     text: new Text({
+            //         text: obj.signal_strengh,
+            //         scale: 1.2,
+            //         offsetY: 15,
+            //         fill: new Fill({
+            //             color: "#fff"
+            //         }),
+            //         stroke: new Stroke({
+            //             color: "0",
+            //             width: 3
+            //         })
+            //     })
+            // }),
         ];
 
         marker.setStyle(style1)
@@ -161,7 +183,6 @@ class Map extends Component {
             }
             return acc;
         },[]);
-        console.log(filterArr2);
 
         filterArr2.map(item2 => item2.signal_strengh && addSingleMarker(item2))
     };
@@ -194,65 +215,73 @@ class Map extends Component {
     };
 
     updateToCurrentUserLocatiom = () => {
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition((position) => {
-                var newCoord = proj.transform([position.coords.longitude, position.coords.latitude], 'EPSG:4326', 'EPSG:3857');
+        const successCallBack = (position) =>{
+            console.log('Success to get Current Position!!!!!')
+            var newCoord = proj.transform([position.coords.longitude, position.coords.latitude], 'EPSG:4326', 'EPSG:3857');
 
 
-                config.getAddressLocation(position.coords.longitude, position.coords.latitude)
-                    .then((details) => {
-                        this.setState({
-                                currentUserLocation: newCoord,
-                                center: newCoord,
-                                zoom: 16,
-                                details
-                            }
-                        );
-                    })
+            config.getAddressLocation(position.coords.longitude, position.coords.latitude)
+                .then((details) => {
+                    this.setState({
+                            currentUserLocation: newCoord,
+                            center: newCoord,
+                            zoom: 16,
+                            details
+                        }
+                    );
+                })
 
-                // Add marker on map - current position!
+            // Add marker on map - current position!
 
-                var marker = new Feature({
-                    geometry: new Point(newCoord),
-                });
+            var marker = new Feature({
+                geometry: new Point(newCoord),
+            });
 
-                var style1 = [
-                    new Style({
-                        image: new Icon(({
-                            scale: 1,
-                            rotateWithView: false,
-                            anchor: [0.5, 1],
-                            anchorXUnits: 'fraction',
-                            anchorYUnits: 'fraction',
-                            opacity: 1,
-                            src: iconMark
-                        })),
-                        zIndex: 5
-                    }),
-                    new Style({
-                        image: new Circle({
-                            radius: 5,
-                            fill: new Fill({
-                                color: 'rgba(255,255,255,1)'
-                            }),
-                            stroke: new Stroke({
-                                color: 'black'
-                            })
+            var style1 = [
+                new Style({
+                    image: new Icon(({
+                        scale: 1,
+                        rotateWithView: false,
+                        anchor: [0.5, 1],
+                        anchorXUnits: 'fraction',
+                        anchorYUnits: 'fraction',
+                        opacity: 1,
+                        src: iconMark
+                    })),
+                    zIndex: 5
+                }),
+                new Style({
+                    image: new Circle({
+                        radius: 5,
+                        fill: new Fill({
+                            color: 'rgba(255,255,255,1)'
+                        }),
+                        stroke: new Stroke({
+                            color: 'black'
                         })
                     })
-                ];
+                })
+            ];
 
-                marker.setStyle(style1)
+            marker.setStyle(style1)
 
-                var layer = new VectorLayer({
-                    source: new VectorSource({
-                        features: [marker]
-                    })
-                });
-
-                this.olmap.addLayer(layer);
-
+            var layer = new VectorLayer({
+                source: new VectorSource({
+                    features: [marker]
+                })
             });
+
+            this.olmap.addLayer(layer);
+
+            this.getPointsData()
+        };
+
+        const errorCallBack = (err) =>{
+            console.log('Error to get Current Position!!!!!')
+        }
+
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(successCallBack, errorCallBack);
         }
     }
 
@@ -273,10 +302,9 @@ class Map extends Component {
         return true;
     }
 
-
     renderMap = () => {
 
-        const {handleGoMyLocation, handleChangeZoom, state: {currentUserLocation}} = this;
+        const {renderSignalStrengthInfo, handleGoMyLocation, handleChangeZoom, state: {currentUserLocation}} = this;
         return (
             <div id="map" className={styles.mapElement}>
                 {currentUserLocation &&
@@ -288,25 +316,30 @@ class Map extends Component {
                     <button onClick={() => handleChangeZoom('+')}>+</button>
                     <button onClick={() => handleChangeZoom('-')}>-</button>
                 </div>
+
+                {renderSignalStrengthInfo()}
             </div>
         );
     }
 
     renderFilters = () => {
-        const {state: {points, mno, model}} = this;
+        const {getPointsData, state: {points, mno, model, paintPointBy, filterTime}} = this;
+
+        const callBackChangeFilter = ()=>{
+            this.clearPoints()
+            this.renderPointsOnMap()
+        }
 
         const handleMnoChange = (e) => {
-            this.setState({mno: e.target.value, model: 'All'}, () => {
-                this.clearPoints()
-                this.renderPointsOnMap()
-            })
+            this.setState({mno: e.target.value, model: 'All'}, callBackChangeFilter)
         }
 
         const handleModelChange = (e) => {
-            this.setState({model: e.target.value}, () => {
-                this.clearPoints()
-                this.renderPointsOnMap()
-            })
+            this.setState({model: e.target.value}, callBackChangeFilter)
+        }
+
+        const handlePaintPointChange = (e) => {
+            this.setState({paintPointBy: e.target.value}, callBackChangeFilter)
         }
 
         const getMnoOptions = () => {
@@ -331,36 +364,108 @@ class Map extends Component {
             );
         };
 
+        const handleTimeChange = (e) => {
+            this.setState({filterTime: e.target.value})
+        }
+
+        const handleGetPoints = (e) => {
+            this.clearPoints()
+            this.setState({points: null})
+            getPointsData()
+        }
+
         return (
             <div className={styles.filtersContainer}>
-                <div>
-                    <label className={`${!points ? styles.disabled : ''}`}>Network:</label>
-                    <select value={mno} onChange={handleMnoChange} disabled={!points}>
-                        <option value="All">All</option>
-                        {getMnoOptions()}
-                    </select>
+                <div className={styles.filter}>
+                    <div>
+                        <label className={`${!points ? styles.disabled : ''}`}>Network:</label>
+                        <select value={mno} onChange={handleMnoChange} disabled={!points}>
+                            <option value="All">All</option>
+                            {getMnoOptions()}
+                        </select>
+                    </div>
                 </div>
-                <div>
-                    <label className={`${!points ? styles.disabled : ''}`}>Model:</label>
-                    <select value={model} onChange={handleModelChange} disabled={!points}>
-                        <option value="All">All</option>
-                        {getModelsOptions()}
-                    </select>
+                <div className={styles.filter}>
+                    <div>
+                        <label className={`${!points ? styles.disabled : ''}`}>Model:</label>
+                        <select value={model} onChange={handleModelChange} disabled={!points}>
+                            <option value="All">All</option>
+                            {getModelsOptions()}
+                        </select>
+                    </div>
+                </div>
+                <div className={styles.filter}>
+                    <div>
+                        <label className={`${!points ? styles.disabled : ''}`}>Color Points By:</label>
+                        <select value={paintPointBy} onChange={handlePaintPointChange} disabled={!points}>
+                            <option value="Network">Network</option>
+                            <option value="Signal">Signal</option>
+                        </select>
+                    </div>
+
+                </div>
+
+                <div className={styles.filter} >
+                    <div style={{display: "flex", alignItems: "center"}}>
+                        <label className={`${!points ? styles.disabled : ''}`}>Hours:</label>
+                        <div style={{display: "flex", alignItems: "center"}}>
+                            <input style={{height: 25, marginRight: 5}} type="number" value={filterTime} onChange={handleTimeChange}/>
+                            <button className={styles.getPointsBtn} onClick={handleGetPoints}>Get New Points!</button>
+                        </div>
+
+                    </div>
+
                 </div>
             </div>
         );
     }
 
     renderSummary = () => {
-        const {pointsLayers, mno, points} = this.state;
+        const {pointsLayers, mno, points, currentUserLocation} = this.state;
 
         return (
             <div className={styles.summaryContainer}>
-                {points ?
-                    `Showing ${pointsLayers.length} points - ${mno === 'All' ? 'All Cellular networks' : mno + ' network'}!`
+                {!currentUserLocation?
+                    'Trying to find your current location...'
                     :
-                    'Loading points from server...'
+                    points ?
+                        `Showing ${pointsLayers.length} points - ${mno === 'All' ? 'All Cellular networks' : mno + ' network'}!`
+                        :
+                        'Loading points from server...'
                 }
+            </div>
+        );
+    }
+
+    renderSignalStrengthInfo = ()=>{
+        return(
+            this.state.paintPointBy === 'Signal' &&
+            <div className={styles.signalStrengthInfoContainer}>
+                <div className={styles.item}>
+                    <span className={`${styles.colorBox} ${styles.Excellent}
+`}>Excellent</span>
+                    <label>-70 dbm Up</label>
+                </div>
+                <div className={styles.item}>
+                    <span className={`${styles.colorBox} ${styles.Good}
+`}>Good</span>
+                    <label>-70 dbm to -85 dbm </label>
+                </div>
+                <div className={styles.item}>
+                    <span className={`${styles.colorBox} ${styles.Fair}
+`}>Fair</span>
+                    <label>-86 dbm to -100 dbm </label>
+                </div>
+                <div className={styles.item}>
+                    <span className={`${styles.colorBox} ${styles.Poor}
+`}>Poor</span>
+                    <label>-101 dbm to -110 dbm </label>
+                </div>
+                <div className={styles.item}>
+                    <span className={`${styles.colorBox} ${styles.NoSignal}
+`}>No Signal</span>
+                    <label>-110 dbm Down </label>
+                </div>
             </div>
         );
     }
